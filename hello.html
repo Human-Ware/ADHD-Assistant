@@ -1,5 +1,41 @@
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
+    <title>ADHD Assistant</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
-<h1>Hello Extensions</h1>
+    <div class="timer">
+        <span class="timer__part timer__part--minutes">00</span>
+         <span class="timer__part">:</span>
+        <span class="timer__part timer__part--seconds">00</span>
+        <button type="button" class="timer__btn timer__btn--control timer__btn--start">
+            <span class="material-icons">play_arrow</span>
+        </button>
+        <button type="button" class="timer__btn timer__btn--reset">
+            <span class="material-icons">timer</span>
+        </button>
+    </div>
+    <div class="music_note">
+        <button type="button" class="music__btn music__btn--control">
+            <span class="material-icons">music_off</span>
+        </button>
+        <button type="button" class="note__btn note__btn--control">
+            <span class="material-icons">notes</span>
+        </button>
+        <button type="button" class="setting__btn setting__btn--control">
+            <span class="material-icons">settings</span>
+        </button>
+        <button type="button" class="info__btn into__btn--control">
+            <span class="material-icons">info</span>
+        </button>
+    </div>
+<!--    <textarea id="notes" placeholder="Type here" spellcheck="false" autofocus></textarea>-->
+    <audio id="mySong">
+        <source src="media/WhiteNoise10min.mp3" type="audio/mp3">
+    </audio>
+<script src="scripts/content.js" type="module"></script>
 </body>
 </html>
