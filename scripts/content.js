@@ -14,8 +14,13 @@ class Timer {
 
         this.el.control.addEventListener("click", () => {
             if (this.interval === null) {
+                localStorage.setItem("timer_status", "start");
+                const time_now = Math.floor(Date.now() / 1000);
+                localStorage.setItem("start_time", String(time_now));
                 this.start();
             } else {
+                localStorage.setItem("remaining_time", String(this.remainingSeconds));
+                localStorage.setItem("timer_status", "pause");
                 this.stop();
             }
         });
@@ -24,11 +29,37 @@ class Timer {
             const inputMinutes = prompt("Enter number of minutes:");
 
             if (inputMinutes < 60) {
+                localStorage.setItem("timer_duration", String(inputMinutes*60));
+                localStorage.setItem("remaining_time", String(inputMinutes*60))
                 this.stop();
                 this.remainingSeconds = inputMinutes * 60;
                 this.updateInterfaceTime();
             }
+            else {
+                localStorage.setItem("remaining_time", "0");
+            }
         });
+
+        if (localStorage.getItem("timer_status") == "start") {
+            this.remainingSeconds = parseInt(localStorage.getItem("start_time")) + 
+                                    parseInt(localStorage.getItem("timer_duration")) - 
+                                    parseInt(localStorage.getItem("timer_exit_time"));
+            if (this.remainingSeconds >= 2) {
+                this.updateInterfaceTime();
+                this.updateInterfaceControls();
+                this.start();
+            } else {
+                localStorage.setItem("timer_status") = "stop";
+                this.stop();
+            }
+        }
+        else if (localStorage.getItem("timer_status") == "pause") {
+            this.remainingSeconds = parseInt(localStorage.getItem("remaining_time"));
+            if (this.remainingSeconds > 0) {
+                this.updateInterfaceTime();
+                this.updateInterfaceControls();
+            }
+        }
     }
 
     updateInterfaceTime() {
@@ -55,6 +86,9 @@ class Timer {
         if (this.remainingSeconds === 0) return;
 
         this.interval = setInterval(() => {
+            const time_now = Math.floor(Date.now() / 1000);
+            localStorage.setItem("timer_exit_time", String(time_now));
+
             this.remainingSeconds--;
             this.updateInterfaceTime();
 
@@ -99,6 +133,10 @@ class Music_Note {
     constructor(root) {
         root.innerHTML = Music_Note.getHTML();
 
+        if (localStorage.getItem("note_status") == "show") {
+            showNote();
+        }
+
         this.el = {
             music: root.querySelector(".music__btn--control"),
             note: root.querySelector(".note__btn--control"),
@@ -107,23 +145,25 @@ class Music_Note {
         };
 
         this.el.music.addEventListener("click", () => {
-            if (song.paused) {
-                song.play();
-                this.el.music.innerHTML = `<span class="material-icons">music_note</span>`;
-            } else {
-                song.pause();
-                this.el.music.innerHTML = `<span class="material-icons">music_off</span>`;
+            this.el.music.innerHTML = `<span class="material-icons">music_note</span>`;
+            const window_content = {
+                url: "player.html",
+                type: "popup",
+                focused: true,
+                height: 150,
+                width: 350
             }
+            chrome.windows.create(window_content, () => {});
         });
 
         this.el.note.addEventListener("click", () => {
-            var win = window.open("", "Notes", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=yes,width=500,height=500,top=200,left=900");
-            win.document.body.innerHTML = `
-                <title>Notes</title>
-                <body>
-                <textarea id="notes_place" placeholder="Type here" spellcheck="false" autofocus cols="56" rows="31"></textarea>
-                </body>
-            `
+            var note = document.getElementById("notes");
+            if (note == null) {
+                showNote();
+            }
+            else {
+                hideNote();
+            }
         });
 
         this.el.info.addEventListener("click", () => {
@@ -169,3 +209,72 @@ new Music_Note(
     document.querySelector(".music_note")
 );
 
+function showNote() {
+    localStorage.setItem("note_status", "show");
+    var note_area = document.createElement("div");
+    note_area.setAttribute("id", "notes")
+    
+    var notes = document.createElement("textarea");
+    notes.setAttribute("id", "notes_text");
+    notes.setAttribute("placeholder", "Type here");
+    notes.setAttribute("spellcheck", false);
+    notes.setAttribute("autofocus", true);
+    notes.setAttribute("rows", 5);
+    notes.setAttribute("cols", 22);
+    if (localStorage.getItem("note") != null) {
+        notes.value = localStorage.getItem("note");
+    }
+    note_area.appendChild(notes);
+
+    var save_button = document.createElement("button");
+    save_button.setAttribute("id", "save_notes");
+    save_button.innerHTML = `<span class="material-icons">save</span>`
+    note_area.appendChild(save_button);
+
+    var clean_button = document.createElement("button");
+    clean_button.setAttribute("id", "clean_button");
+    clean_button.innerHTML = `<span class="material-icons">delete</span>`
+    note_area.appendChild(clean_button);
+
+    var new_button = document.createElement("button");
+    new_button.setAttribute("id", "new_button");
+    new_button.innerHTML = `<span class="material-icons">add_circle_outline</span>`
+    note_area.appendChild(new_button);
+
+    var close_button =  document.createElement("button");
+    close_button.setAttribute("id", "close_button");
+    close_button.innerHTML = `<span class="material-icons">clear</span>`
+    note_area.appendChild(close_button);
+
+    // listener
+    close_button.addEventListener("click", () => {
+        hideNote();
+    });
+    clean_button.addEventListener("click", () => {
+        notes.value = "";
+        localStorage.setItem("note", "");
+    });
+    save_button.addEventListener("click", () => {
+        notes.focus();
+        const file = {
+			url:'data:application/txt,' +
+				encodeURIComponent(notes.value.replace(/\r?\n/g, '\r\n')),
+			filename: "notes.txt",
+		};
+		chrome.downloads.download(file);
+    });
+    notes.addEventListener("change", () => {
+        localStorage.setItem("note", notes.value);
+    })
+    new_button.addEventListener("click", () => {
+        localStorage.setItem("note", "");
+        notes.value = "";
+    })
+    document.body.append(note_area);
+}
+
+function hideNote() {
+    localStorage.setItem("note_status", "hide");
+    var note_area = document.getElementById("notes");
+    note_area.parentNode.removeChild(note_area);
+}

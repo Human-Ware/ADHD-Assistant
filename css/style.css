@@ -1,9 +1,7 @@
 body {
     background: white;
     margin: 10px;
-    /*min-width: 54vh;*/
-    /*max-height: 60vh;*/
-    width: 210px;
+    min-width: 210px;
 }
 
 .timer {
@@ -11,6 +9,7 @@ body {
     display: inline-block;
     padding: 5px 5px;
     border-radius: 20px;
+    
 }
 
 .timer__part {
@@ -81,14 +80,57 @@ body {
     cursor: pointer;
 }
 
-.music {
-    height: 16vh;
-    width: 100%;
+
+#notes {
     font-family: sans-serif;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
-    margin-left: 1%;
-    margin-top: 5%;
-    margin-bottom: 5%;
+    display: inline-block;
+    padding: 5px 5px;
+}
+
+#save_notes {
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+    margin-top: 5px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    background: #00b84c;
+    cursor: pointer;
+}
+
+#clean_button {
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+    margin-top: 5px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    background: red;
+    cursor: pointer;
+}
+
+#new_button {
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+    margin-top: 5px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    background: #8208e6;
+    cursor: pointer;
+}
+
+#close_button{
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+    margin-top: 5px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    background: grey;
+    cursor: pointer;
 }
