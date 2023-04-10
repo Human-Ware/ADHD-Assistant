@@ -127,8 +127,6 @@ new Timer(
     document.querySelector(".timer")
 );
 
-var song = document.getElementById("mySong");
-
 class Music_Note {
     constructor(root) {
         root.innerHTML = Music_Note.getHTML();
